@@ -106,6 +106,9 @@ if ($help) {
 $defaultConfig = @'
 # ===== WINFETCH CONFIGURATION =====
 
+# Display either in 'en' or 'jp' (default is jp)
+# $info_language = 'en'
+
 # $image = "~/winfetch.png"
 # $noimage = $true
 
@@ -196,14 +199,15 @@ $diskstyle = 'bartext'
     "memory"
     "disk"
 # LOCALE, LAYOUT, LOCAL_IP, PUBLIC_IP, FAKE_IP, WEATHER
-    "dashes_fill"
+    "dashes_end"
+    "blank"
     "other"
     "locale"
-    "layout"
+#    "layout"
     "local_ip"
 #    "public_ip"
     "redacted_ip"
-#    "weather"
+    "weather"
 # END OF VIEW WITH COLORBAR
     "dashes_end"
     "blank"
@@ -270,7 +274,8 @@ if (-not $config -or $all) {
         "cpu_usage"
         "memory"
         "disk"
-        "dashes_fill"
+        "dashes_end"
+        "blank"
         "other"
         "locale"
         "layout"
