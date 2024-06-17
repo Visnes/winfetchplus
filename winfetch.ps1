@@ -1,17 +1,17 @@
-﻿#!/usr/bin/env -S pwsh -nop
+#!/usr/bin/env -S pwsh -nop
 #requires -version 5
 
 # (!) This file must to be saved in UTF-8 with BOM encoding in order to work with legacy Powershell 5.x
 
 <#PSScriptInfo
-.VERSION 2.5.1
-.GUID 27c6f0dd-dbf2-4a3e-90df-a23c3c6c630d
-.AUTHOR Winfetch contributers
-.PROJECTURI https://github.com/lptstr/winfetch
+.VERSION 2.4.1
+.GUID a9a07f39-87e7-4164-9395-27cb54d86656
+.AUTHOR Kied Llaentenn and contributers
+.PROJECTURI https://github.com/kiedtl/winfetch
 .COMPANYNAME
 .COPYRIGHT
 .TAGS neofetch screenfetch system-info commandline
-.LICENSEURI https://github.com/lptstr/winfetch/blob/master/LICENSE
+.LICENSEURI https://github.com/kiedtl/winfetch/blob/master/LICENSE
 .ICONURI https://lptstr.github.io/lptstr-images/proj/winfetch/logo.png
 .EXTERNALMODULEDEPENDENCIES
 .REQUIREDSCRIPTS
@@ -38,8 +38,6 @@
     Sets the version of Windows to derive the logo from.
 .PARAMETER imgwidth
     Specify width for image/logo. Default is 35.
-.PARAMETER alphathreshold
-    Specify minimum alpha value for image pixels to be visible. Default is 50.
 .PARAMETER blink
     Make the logo blink.
 .PARAMETER stripansi
@@ -84,7 +82,6 @@ param(
     [ValidateSet("text", "bar", "textbar", "bartext")][string]$diskstyle = "text",
     [ValidateSet("text", "bar", "textbar", "bartext")][string]$batterystyle = "text",
     [ValidateScript({$_ -gt 1 -and $_ -lt $Host.UI.RawUI.WindowSize.Width-1})][alias('w')][int]$imgwidth = 35,
-    [ValidateScript({$_ -ge 0 -and $_ -le 255})][alias('t')][int]$alphathreshold = 50,
     [array]$showdisks = @($env:SystemDrive),
     [array]$showpkgs = @("scoop", "choco")
 )
@@ -116,33 +113,13 @@ $defaultConfig = @'
 # $ascii = $true
 
 # Set the version of Windows to derive the logo from.
-# $logo = "Windows 10"
+# $logo = "Visnes"
 
 # Specify width for image/logo
-# $imgwidth = 24
-
-# Specify minimum alpha value for image pixels to be visible
-# $alphathreshold = 50
-
-# Custom ASCII Art
-# This should be an array of strings, with positive
-# height and width equal to $imgwidth defined above.
-# $CustomAscii = @(
-#     "⠀⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣦⠀ ⠀"
-#     "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣶⣶⣾⣷⣶⣆⠸⣿⣿⡟⠀ ⠀"
-#     "⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣷⡈⠻⠿⠟⠻⠿⢿⣷⣤⣤⣄⠀⠀ ⠀"
-#     "⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣦⠀ ⠀"
-#     "⠀⠀⠀⢀⣤⣤⡘⢿⣿⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⡇ ⠀"
-#     "⠀⠀⠀⣿⣿⣿⡇⢸⣿⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⣉⣉⡁ ⠀"
-#     "⠀⠀⠀⠈⠛⠛⢡⣾⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⡇ ⠀"
-#     "⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⠟⠀ ⠀"
-#     "⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⡿⢁⣴⣶⣦⣴⣶⣾⡿⠛⠛⠋⠀⠀ ⠀"
-#     "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠿⠿⢿⡿⠿⠏⢰⣿⣿⣧⠀⠀ ⠀"
-#     "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⠟⠀⠀ ⠀"
-# )
+# $imgwidth = 52
 
 # Make the logo blink
-# $blink = $true
+$blink = $true
 
 # Display all built-in info segments.
 # $all = $true
@@ -150,8 +127,8 @@ $defaultConfig = @'
 # Add a custom info line
 # function info_custom_time {
 #     return @{
-#         title = "Time"
-#         content = (Get-Date)
+#         title = "└─  じかん"
+#         content = (Get-Date -Format "dd.MM.yyyy - HH:mm (K)")
 #     }
 # }
 
@@ -180,40 +157,55 @@ $defaultConfig = @'
 # 'bar' is for bar only.
 # 'textbar' is for text + bar.
 # 'bartext' is for bar + text.
-# $cpustyle = 'bar'
-# $memorystyle = 'textbar'
-# $diskstyle = 'bartext'
+$cpustyle = 'bartext'
+$memorystyle = 'bartext'
+$diskstyle = 'bartext'
 # $batterystyle = 'bartext'
-
 
 # Remove the '#' from any of the lines in
 # the following to **enable** their output.
 
 @(
+# TITLE & SUBTITLE
     "title"
-    "dashes"
+    "subtitle"
+    "blank"
+# OS, KERNEL, PS-PKGS, PWSH, UPTIME, TERMINAL, PKGS, THEME, DATETIME, BATTERY
+    "software"
     "os"
-    "computer"
     "kernel"
-    "motherboard"
-    # "custom_time"  # use custom info line
-    "uptime"
-    # "ps_pkgs"  # takes some time
-    "pkgs"
+#    "ps_pkgs"  # takes some time
     "pwsh"
-    "resolution"
-    "terminal"
-    # "theme"
+    "uptime"
+#    "terminal"
+#    "pkgs"
+#    "theme"
+    "datetime"
+    "battery"
+    "dashes_end"
+    "blank"
+# COMPUTER, CPU, GPU, MOTHERBOARD, TEMPERATURES, RESOLUTION, CPU_USAGE, MEMORY, DISK
+    "hardware"
+#    "computer"
     "cpu"
     "gpu"
-    # "cpu_usage"
+#    "motherboard"
+#   "temperatures" # Not used (yet), don't uncomment!
+    "resolution"
+#    "cpu_usage"
     "memory"
     "disk"
-    # "battery"
-    # "locale"
-    # "weather"
-    # "local_ip"
-    # "public_ip"
+# LOCALE, LAYOUT, LOCAL_IP, PUBLIC_IP, FAKE_IP, WEATHER
+    "dashes_fill"
+    "other"
+    "locale"
+    "layout"
+    "local_ip"
+#    "public_ip"
+    "redacted_ip"
+#    "weather"
+# END OF VIEW WITH COLORBAR
+    "dashes_end"
     "blank"
     "colorbar"
 )
@@ -254,34 +246,45 @@ $config = . $configPath
 if (-not $config -or $all) {
     $config = @(
         "title"
-        "dashes"
+        "subtitle"
+        "blank"
+        "software"
         "os"
-        "computer"
         "kernel"
-        "motherboard"
-        "uptime"
-        "resolution"
         "ps_pkgs"
-        "pkgs"
         "pwsh"
+        "uptime"
         "terminal"
+        "pkgs"
         "theme"
+        "datetime"
+        "battery"
+        "dashes_end"
+        "blank"
+        "hardware"
+        "computer"
         "cpu"
         "gpu"
+        "motherboard"
+        "resolution"
         "cpu_usage"
         "memory"
         "disk"
-        "battery"
+        "dashes_fill"
+        "other"
         "locale"
-        "weather"
+        "layout"
         "local_ip"
         "public_ip"
+        "redacted_ip"
+        "weather"
+        "dashes_end"
         "blank"
         "colorbar"
     )
 }
 
-# prevent config from overriding specified parameters
+# Prevent config from overriding specified parameters
 foreach ($param in $PSBoundParameters.Keys) {
     Set-Variable $param $PSBoundParameters[$param]
 }
@@ -290,16 +293,13 @@ foreach ($param in $PSBoundParameters.Keys) {
 $e = [char]0x1B
 $ansiRegex = '([\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~])))'
 $cimSession = New-CimSession
-$os = Get-CimInstance -ClassName Win32_OperatingSystem -Property Caption,OSArchitecture,LastBootUpTime,TotalVisibleMemorySize,FreePhysicalMemory -CimSession $cimSession
+$os = Get-CimInstance -ClassName Win32_OperatingSystem -Property Caption,OSArchitecture -CimSession $cimSession
 $t = if ($blink) { "5" } else { "1" }
 $COLUMNS = $imgwidth
 
 # ===== UTILITY FUNCTIONS =====
 function get_percent_bar {
-    param ([Parameter(Mandatory)][int]$percent)
-
-    if ($percent -gt 100) { $percent = 100 }
-    elseif ($percent -lt 0) { $percent = 0 }
+    param ([Parameter(Mandatory)][ValidateRange(0, 100)][int]$percent)
 
     $x = [char]9632
     $bar = $null
@@ -395,32 +395,15 @@ $img = if (-not $noimage) {
             for ($i = 0; $i -lt $Bitmap.Height; $i += 2) {
                 $currline = ""
                 for ($j = 0; $j -lt $Bitmap.Width; $j++) {
-                    $pixel1 = $Bitmap.GetPixel($j, $i)
-                    $char = [char]0x2580
+                    $back = $Bitmap.GetPixel($j, $i)
                     if ($i -ge $Bitmap.Height - 1) {
-                        if ($pixel1.A -lt $alphathreshold) {
-                            $char = [char]0x2800
-                            $ansi = "$e[49m"
-                        } else {
-                            $ansi = "$e[38;2;$($pixel1.R);$($pixel1.G);$($pixel1.B)m"
-                        }
+                        $foreVT = ""
                     } else {
-                        $pixel2 = $Bitmap.GetPixel($j, $i + 1)
-                        if ($pixel1.A -lt $alphathreshold -or $pixel2.A -lt $alphathreshold) {
-                            if ($pixel1.A -lt $alphathreshold -and $pixel2.A -lt $alphathreshold) {
-                                $char = [char]0x2800
-                                $ansi = "$e[49m"
-                            } elseif ($pixel1.A -lt $alphathreshold) {
-                                $char = [char]0x2584
-                                $ansi = "$e[49;38;2;$($pixel2.R);$($pixel2.G);$($pixel2.B)m"
-                            } else {
-                                $ansi = "$e[49;38;2;$($pixel1.R);$($pixel1.G);$($pixel1.B)m"
-                            }
-                        } else {
-                            $ansi = "$e[38;2;$($pixel1.R);$($pixel1.G);$($pixel1.B);48;2;$($pixel2.R);$($pixel2.G);$($pixel2.B)m"
-                        }
+                        $fore = $Bitmap.GetPixel($j, $i + 1)
+                        $foreVT = "$e[48;2;$($fore.R);$($fore.G);$($fore.B)m"
                     }
-                    $currline += "$ansi$char$e[0m"
+                    $backVT = "$e[38;2;$($back.R);$($back.G);$($back.B)m"
+                    $currline += "$backVT$foreVT$([char]0x2580)$e[0m"
                 }
                 $currline
             }
@@ -429,8 +412,6 @@ $img = if (-not $noimage) {
         $Bitmap.Dispose()
         $OldImage.Dispose()
 
-    } elseif (($CustomAscii -is [Array]) -and ($CustomAscii.Length -gt 0)) {
-        $CustomAscii
     } else {
         if (-not $logo) {
             if ($os -Like "*Windows 11 *") {
@@ -503,6 +484,36 @@ $img = if (-not $noimage) {
                 "${e}[${t};34m            `` ${e}[33m:EEEEtttt::::z7       "
                 "${e}[${t};33m                'VEzjt:;;z>*``       "
             )
+        } elseif ($logo -eq "Visnes") {
+            $COLUMNS = 54
+            @(
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[38;5;169m((#((⠀⠀⠀⠀))#))⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[38;5;169m(#########(#####([38;5;168m(((((.⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀##*#[38;5;170m####[38;5;169m####[38;5;169m#######(([38;5;168m((⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀%###/######[38;5;169m####[38;5;169m#####[38;5;168m#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀*#⠀⠀⠀⠀⠀⠀⠀⠀%[38;5;170m%###[38;5;170m####[38;5;170m#####[38;5;169m####[38;5;169m#⠀⠀⠀⠀⠀⠀⠀⠀[38;5;168m((⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀,####⠀⠀⠀⠀⠀⠀⠀⠀%%%%####[38;5;170m#########⠀⠀⠀⠀⠀⠀⠀⠀((((⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀###(###⠀⠀⠀⠀⠀⠀⠀⠀##[38;5;135m%%%######[38;5;170m####,⠀⠀⠀⠀⠀⠀⠀#[38;5;168m(((([38;5;168m(,⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀[38;5;074m####[38;5;069m##.#⠀⠀⠀⠀⠀⠀⠀⠀#[38;5;141m##%%%####[38;5;170m###,⠀⠀⠀⠀⠀⠀⠀####/([38;5;168m((⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀#####[38;5;074m####[38;5;104m#⠀⠀⠀⠀⠀⠀⠀⠀####[38;5;141m#%%%[38;5;170m####⠀⠀⠀⠀⠀⠀⠀##[38;5;169m####[38;5;168m##*(⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀[38;5;074m##⠀#[38;5;074m####[38;5;068m###⠀⠀⠀⠀⠀⠀⠀⠀##[38;5;140m#[38;5;140m###%[38;5;135m%%%⠀⠀⠀⠀⠀⠀⠀#([38;5;169m#[38;5;169m####[38;5;169m####⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀((######[38;5;074m####⠀⠀⠀⠀⠀⠀⠀⠀#[38;5;104m####[38;5;140m###⠀⠀⠀⠀⠀⠀⠀###[38;5;170m##*####,#⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀((([38;5;074m(########[38;5;074m#⠀⠀⠀⠀⠀⠀⠀⠀######⠀⠀⠀⠀⠀⠀⠀####[38;5;170m####[38;5;169m#####⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀(((((#[38;5;074m#######⠀⠀⠀⠀⠀⠀⠀,##[38;5;104m##⠀⠀⠀⠀⠀⠀⠀[38;5;135m%%*####*#####⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀*[38;5;038m((((([38;5;038m((##[38;5;074m####⠀⠀⠀⠀⠀⠀⠀⠀##⠀⠀⠀⠀⠀⠀.#[38;5;141m##%%[38;5;170m%###[38;5;170m####.⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀(((((((([38;5;074m(###[38;5;074m#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀.####(##%%%[38;5;170m###⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀/([38;5;038m(((((((####⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀/##[38;5;104m####[38;5;140m####%%⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀(((([38;5;038m(((([38;5;038m((##,⠀⠀⠀⠀⠀⠀⠀⠀⠀##(#####[38;5;104m####(⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀((((([38;5;038m(((([38;5;074m(,⠀⠀⠀⠀⠀⠀⠀####[38;5;104m#######⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀((*((((,⠀⠀⠀⠀⠀#####[38;5;068m###⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀*((((,⠀⠀⠀#####[38;5;068m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                "${e}[${t};38;5;169m⠀"
+            )
         } elseif ($logo -eq "Microsoft") {
             $COLUMNS = 13
             @(
@@ -515,141 +526,388 @@ $img = if (-not $noimage) {
                 "${e}[${t};34m│     │${e}[33m│     │"
                 "${e}[${t};34m└─────┘${e}[33m└─────┘"
             )
-        } elseif ($logo -eq "Windows 2000" -Or $logo -eq "Windows 98" -Or $logo -eq "Windows 95") {
-            $COLUMNS = 45
-            @(
-                "                         ${e}[${t};30mdBBBBBBBb"
-                "                     ${e}[${t};30mdBBBBBBBBBBBBBBBb"
-                "             ${e}[${t};30m   000 BBBBBBBBBBBBBBBBBBBB"
-                "${e}[${t};30m:::::        000000 BBBBB${e}[${t};31mdBB${e}[${t};30mBBBB${e}[${t};32mBBBb${e}[${t};30mBBBBBBB"
-                "${e}[${t};31m::::: ${e}[${t};30m====== 000${e}[${t};31m000 BBBBBBBB${e}[${t};30mBBBB${e}[${t};32mBBBBBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};31m::::: ====== ${e}[${t};31m000000 BBBBBBBB${e}[${t};30mBBBB${e}[${t};32mBBBBBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};31m::::: ====== ${e}[${t};31m000000 BBBBBBBB${e}[${t};30mBBBB${e}[${t};32mBBBBBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};31m::::: ====== ${e}[${t};31m000000 BBBBBBBB${e}[${t};30mBBBB${e}[${t};32mBBBBBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};31m::::: ====== 000000 BBBBf${e}[${t};30mBBBBBBBBBBB${e}[${t};32m`BBBB${e}[${t};30mBBBB"
-                "${e}[${t};30m::::: ${e}[${t};31m====== 000${e}[${t};30m000 BBBBBBBBBBBBBBBBBBBBBBBBB"
-                "${e}[${t};30m::::: ====== 000000 BBBBB${e}[${t};34mdBB${e}[${t};30mBBBB${e}[${t};33mBBBb${e}[${t};30mBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};34m::::: ${e}[${t};30m====== 000${e}[${t};34m000 BBBBBBBB${e}[${t};30mBBBB${e}[${t};33mBBBBBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};34m::::: ====== 000000 BBBBBBBB${e}[${t};30mBBBB${e}[${t};33mBBBBBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};34m::::: ====== 000000 BBBBBBBB${e}[${t};30mBBBB${e}[${t};33mBBBBBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};34m::::: ====== 000000 BBBBBBBB${e}[${t};30mBBBB${e}[${t};33mBBBBBBBBB${e}[${t};30mBBBB"
-                "${e}[${t};34m::::: ====== 000000 BBBBf${e}[${t};30mBBBBBBBBBBB${e}[${t};33m`BBBB${e}[${t};30mBBBB"
-                "${e}[${t};30m::::: ${e}[${t};34m====== 000${e}[${t};30m000 BBBBBf         `BBBBBBBBB"
-                "${e}[${t};30m   :: ====== 000000 BBf                `BBBBB"
-                "     ${c1}   ==  000000 B                     BBB"
-            )
         } else {
-            Write-Error 'The only version logos supported are Windows 11, Windows 10/8.1/8, Windows 7/Vista/XP, Windows 2000/98/95 and Microsoft.'
+            Write-Error 'Use one of the followings logos in the config file: Microsoft, Windows 11, Windows 10, Windows XP, Windows 7, Microsoft or Visnes.'
             exit 1
         }
     }
 }
 
 
+
+
+###############################
+#  BLANKS, DASHES & COLORBAR  #
+###############################
+
 # ===== BLANK =====
 function info_blank {
     return @{}
 }
 
+# ===== BLANK-D =====
+function info_blank_d {
+    return @{
+        title = ""
+        content = "│"
+    }
+}
+
+# ===== BLANK-E =====
+function info_blank_e {
+    return @{
+        title = ""
+        content = "└"
+    }
+}
+
+# ===== INFO_SOFTWARE =====
+function info_software {
+    $content_en = "╭─┤${e}[;31m Software information${e}[0m ├─────────────────────────────────────"
+    $content_jp = "╭────┤${e}[;31m ソフトウエア情報${e}[0m├───────────────────────────────────────"
+
+    if ([string]::IsNullOrEmpty($info_language)) {
+        $info_language = "jp"
+    }
+    if ($info_language -eq "jp") {
+        $content = $content_jp
+    } else {
+        $content = $content_en
+    }
+    return @{
+        title   = ""
+        content = $content
+    }
+}
+
+# ===== INFO_HARDWARE =====
+function info_hardware {
+    $content_en = "╭─┤${e}[;32m Hardware information${e}[0m ├─────────────────────────────────────"
+    $content_jp = "╭────┤${e}[;32m ハードウェア情報${e}[0m├───────────────────────────────────────"
+    
+    if ([string]::IsNullOrEmpty($info_language)) {
+        $info_language = "jp"
+    }
+    if ($info_language -eq "jp") {
+        $content = $content_jp
+    } else {
+        $content = $content_en
+    }
+    return @{
+        title   = ""
+        content = $content
+    }
+}
+
+
+# ===== INFO_OTHER =====
+function info_other {
+    $content_en = "╭─┤${e}[;33m Other information${e}[0m ├────────────────────────────────────────"
+    $content_jp = "╭────┤${e}[;33m その他情報${e}[0m├─────────────────────────────────────────────"
+
+    if ([string]::IsNullOrEmpty($info_language)) {
+        $info_language = "jp"
+    }
+    if ($info_language -eq "jp") {
+        $content = $content_jp
+    } else {
+        $content = $content_en
+    }
+    return @{
+        title   = ""
+        content = $content
+    }
+}
+
+# ===== DASHES-A =====
+function info_dashes_end {
+    return @{
+        title   = ""
+        content = "╰──────────────────────────────────────────────────────────────"
+    }
+}
+
+# ===== DASHES-S =====
+function info_dashes_fill {
+    return @{
+        title   = ""
+        content = "│"
+    }
+}
+
+# ===== DASHES =====
+function info_dashes {
+    $length = [System.Environment]::UserName.Length + $env:COMPUTERNAME.Length + 7
+    return @{
+        title   = ""
+        content = ("─" * $length)
+    }
+}
 
 # ===== COLORBAR =====
 function info_colorbar {
     return @(
         @{
             title   = ""
-            content = ('{0}[0;40m{1}{0}[0;41m{1}{0}[0;42m{1}{0}[0;43m{1}{0}[0;44m{1}{0}[0;45m{1}{0}[0;46m{1}{0}[0;47m{1}{0}[0m') -f $e, '   '
-        },
-        @{
-            title   = ""
-            content = ('{0}[0;100m{1}{0}[0;101m{1}{0}[0;102m{1}{0}[0;103m{1}{0}[0;104m{1}{0}[0;105m{1}{0}[0;106m{1}{0}[0;107m{1}{0}[0m') -f $e, '   '
+            content = ('{0}[0;40m{1}{0}[0;41m{1}{0}[0;42m{1}{0}[0;43m{1}{0}[0;44m{1}{0}[0;45m{1}{0}[0;46m{1}{0}[0;47m{1}{0}[0;100m{1}{0}[0;101m{1}{0}[0;102m{1}{0}[0;103m{1}{0}[0;104m{1}{0}[0;105m{1}{0}[0;106m{1}{0}[0;107m{1}{0}[0m') -f $e, '    '
         }
     )
 }
 
 
+######################
+#  TITLE & SUBTITLE  #
+######################
+
+# ===== TITLE =====
+function info_title {
+    param (
+        [string]$e = [char]27
+    )
+    $width = [console]::WindowWidth - $COLUMNS
+    $content = "░░▒▒▒▓▓▓▓█████   ${e}[1;31m{0}${e}[0m 󰁥  ${e}[1;36m{1}${e}[0m    █████▓▓▓▓▒▒▒░░" -f [System.Environment]::UserName, $env:COMPUTERNAME
+    $contentVisibleLength = ($content -replace "\x1B\[[0-9;]*[A-Za-z]", "").Length
+    $padding = [math]::Max(0, ($width - $contentVisibleLength) / 2 - 3)
+    $centeredContent = (" " * $padding) + $content
+
+    return @{
+        title   = ""
+        content = $centeredContent
+    }
+}
+
+# ===== SUBTITLE =====
+function info_subtitle {
+    param (
+        [string]$title = ""
+    )
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        # Japanese haiku (max 60 characters)
+        $quotes_jp = @(
+            "古池や蛙飛び込む水の音",
+            "やまざくら花よりほかに知る人なし",
+            "春過ぎて夏来にけらし白妙の",
+            "あしびきの山鳥の尾のしだり尾の",
+            "天の原ふりさけ見れば春日なる",
+            "いますぐに月となりにけるかな",
+            "あらし吹く秋の夕暮れは",
+            "秋風にたなびく雲のたえ間より",
+            "しづかさや岩に滲む水の音",
+            "この道や行く人なしに秋のくれ",
+            "昼顔の花の散るや秋の風",
+            "霜柱に花やうき世のひまなき",
+            "菜の花や月は東に日は西に",
+            "春雨や草も腐らぬ青さ哉",
+            "鶉鳴くや村のさびしき夕ぐれ",
+            "梅に蟻のはいつもありけり",
+            "雲の上にもまた雲たれ朝顔",
+            "霧深し奥山に月は白し",
+            "麦の穂にしづくて光る水",
+            "花の色は移りにけりないたづらに"
+        )
+        $quotes = $quotes_jp
+    } elseif ($info_language -eq "en") {
+        # English quotes (max 60 characters)
+        $quotes_en = @(
+            "My selfie game is stronger than my will to adult.",
+            "Avocado toast is basically life fuel.",
+            "I'm not a morning person, or an afternoon person.",
+            "Is this gluten-free, organic, and non-GMO?",
+            "Netflix and chill is my cardio.",
+            "I can't even without my coffee.",
+            "Adulting is just not my thing.",
+            "WiFi is my spirit animal.",
+            "Hashtag blessed, but also stressed.",
+            "Can I pay my rent in exposure?",
+            "This bussy poppin'",
+            "I need a vacation from my vacation.",
+            "Sorry, I can't. I have plans with my bed.",
+            "Living my best life, one meme at a time.",
+            "I'm busy overthinking right now.",
+            "Can we reschedule? Mercury is in retrograde.",
+            "If it's not on Instagram, did it even happen?",
+            "I'm 99% sure I'm a Disney princess.",
+            "My Patronus is a pumpkin spice latte.",
+            "I speak fluent emoji.",
+            "Why buy a house when you can buy avocado toast?"
+        )
+        $quotes = $quotes_en
+    }
+
+    $content = Get-Random -InputObject $quotes
+    $width = 60
+    $contentLength = $content.Length
+    $paddingLeft = [math]::Floor(($width - $contentLength) / 2)
+    $paddingRight = $width - $contentLength - $paddingLeft
+    $centeredContent = (" " * $paddingLeft) + $content + (" " * $paddingRight)
+
+    return @{
+        title   = $title
+        content = $centeredContent
+    }
+}
+
+
+
+
+
+#################################################################################
+#  OS, KERNEL, PS-PKGS, PWSH, UPTIME, TERMINAL, PKGS, THEME, DATETIME, BATTERY  #
+#################################################################################
+
 # ===== OS =====
 function info_os {
+    $os = Get-WmiObject -Class Win32_OperatingSystem
+
+    if ([string]::IsNullOrEmpty($info_language)) {
+        $info_language = "jp"
+    }
+
+    $title_jp = "オーエス      "
+    $title_en = "OS            "
+
+    if ($info_language -eq "en") {
+        $title = $title_en
+    } else {
+        $title = $title_jp
+    }
+
     return @{
-        title   = "OS"
+        title   = $title
+        icon    = "├─  "
         content = "$($os.Caption.TrimStart('Microsoft ')) [$($os.OSArchitecture)]"
     }
 }
 
-
-# ===== MOTHERBOARD =====
-function info_motherboard {
-    $motherboard = Get-CimInstance Win32_BaseBoard -CimSession $cimSession -Property Manufacturer,Product
-    return @{
-        title = "Motherboard"
-        content = "{0} {1}" -f $motherboard.Manufacturer, $motherboard.Product
-    }
-}
-
-
-# ===== TITLE =====
-function info_title {
-    return @{
-        title   = ""
-        content = "${e}[1;33m{0}${e}[0m@${e}[1;33m{1}${e}[0m" -f [System.Environment]::UserName,$env:COMPUTERNAME
-    }
-}
-
-
-# ===== DASHES =====
-function info_dashes {
-    $length = [System.Environment]::UserName.Length + $env:COMPUTERNAME.Length + 1
-    return @{
-        title   = ""
-        content = "-" * $length
-    }
-}
-
-
-# ===== COMPUTER =====
-function info_computer {
-    $compsys = Get-CimInstance -ClassName Win32_ComputerSystem -Property Manufacturer,Model -CimSession $cimSession
-    return @{
-        title   = "Host"
-        content = '{0} {1}' -f $compsys.Manufacturer, $compsys.Model
-    }
-}
-
-
 # ===== KERNEL =====
 function info_kernel {
+    # Set default language to jp if $info_language is blank or not set
+    if ([string]::IsNullOrEmpty($info_language)) {
+        $info_language = "jp"
+    }
+
+    # Define titles for both languages
+    $title_jp = "カーネル      "  # Japanese title
+    $title_en = "Kernel        "   # English title
+
+    # Select title based on $info_language
+    if ($info_language -eq "en") {
+        $title = $title_en
+    } else {
+        $title = $title_jp
+    }
+
     return @{
-        title   = "Kernel"
+        title   = $title
+        icon    = "├─  "
         content = "$([System.Environment]::OSVersion.Version)"
+    }
+}
+
+# ===== POWERSHELL PACKAGES =====
+function info_ps_pkgs {
+    $ps_pkgs = @()
+
+    $pgp = Get-Package -ProviderName PowerShellGet
+    $modulecount = $pgp.Where({$_.Metadata["tags"] -like "*PSModule*"}).count
+    $scriptcount = $pgp.Where({$_.Metadata["tags"] -like "*PSScript*"}).count
+
+    if ($modulecount) {
+        if ($modulecount -eq 1) { $modulestring = "1 Module" }
+        else { $modulestring = "$modulecount Modules" }
+
+        $ps_pkgs += "$modulestring"
+    }
+
+    if ($scriptcount) {
+        if ($scriptcount -eq 1) { $scriptstring = "1 Script" }
+        else { $scriptstring = "$scriptcount Scripts" }
+
+        $ps_pkgs += "$scriptstring"
+    }
+
+    if (-not $ps_pkgs) {
+        $ps_pkgs = "(none)"
+    }
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "PS パッケージ "
+    } elseif ($info_language -eq "en") {
+        $title = "PS Packages   "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─  "
+        content = $ps_pkgs -join ', '
+    }
+}
+
+# ===== POWERSHELL VERSION =====
+function info_pwsh {
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "シェル        "
+    } elseif ($info_language -eq "en") {
+        $title = "Shell         "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─  "
+        content = "PowerShell v$($PSVersionTable.PSVersion)"
     }
 }
 
 
 # ===== UPTIME =====
 function info_uptime {
-    @{
-        title   = "Uptime"
-        content = $(switch ([System.DateTime]::Now - $os.LastBootUpTime) {
-            ({ $PSItem.Days -eq 1 }) { '1 day' }
-            ({ $PSItem.Days -gt 1 }) { "$($PSItem.Days) days" }
-            ({ $PSItem.Hours -eq 1 }) { '1 hour' }
-            ({ $PSItem.Hours -gt 1 }) { "$($PSItem.Hours) hours" }
-            ({ $PSItem.Minutes -eq 1 }) { '1 minute' }
-            ({ $PSItem.Minutes -gt 1 }) { "$($PSItem.Minutes) minutes" }
-        }) -join ' '
+    $uptime = (Get-Date) - (Get-CimInstance -ClassName Win32_OperatingSystem -Property LastBootUpTime).LastBootUpTime
+    $uptimeString = ""
+
+    if ($uptime.Days -gt 0) {
+        $uptimeString += "$($uptime.Days) day"
+        if ($uptime.Days -gt 1) {
+            $uptimeString += "s"
+        }
+        $uptimeString += " "
     }
-}
 
+    if ($uptime.Hours -gt 0) {
+        $uptimeString += "$($uptime.Hours) hour"
+        if ($uptime.Hours -gt 1) {
+            $uptimeString += "s"
+        }
+        $uptimeString += " "
+    }
 
-# ===== RESOLUTION =====
-function info_resolution {
-    Add-Type -AssemblyName System.Windows.Forms
-    $displays = foreach ($monitor in [System.Windows.Forms.Screen]::AllScreens) {
-        "$($monitor.Bounds.Size.Width)x$($monitor.Bounds.Size.Height)"
+    if ($uptime.Minutes -gt 0) {
+        $uptimeString += "$($uptime.Minutes) minute"
+        if ($uptime.Minutes -gt 1) {
+            $uptimeString += "s"
+        }
+        $uptimeString += " "
+    }
+
+    if ($uptime.Seconds -gt 0) {
+        $uptimeString += "$($uptime.Seconds) second"
+        if ($uptime.Seconds -gt 1) {
+            $uptimeString += "s"
+        }
+    }
+
+    $uptimeString = $uptimeString.Trim()
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "アップタイム  "
+    } elseif ($info_language -eq "en") {
+        $title = "Uptime        "
     }
 
     return @{
-        title   = "Resolution"
-        content = $displays -join ', '
+        title   = $title
+        icon    = "├─⏻  "
+        content = $uptimeString
     }
 }
 
@@ -657,12 +915,13 @@ function info_resolution {
 # ===== TERMINAL =====
 # this section works by getting the parent processes of the current powershell instance.
 function info_terminal {
-    $programs = 'powershell', 'pwsh', 'winpty-agent', 'cmd', 'zsh', 'sh', 'bash', 'fish', 'env', 'nu', 'elvish', 'csh', 'tcsh', 'python', 'xonsh'
+    $programs = 'powershell', 'pwsh', 'winpty-agent', 'cmd', 'zsh', 'bash', 'fish', 'env', 'nu', 'elvish', 'csh', 'tcsh', 'python', 'xonsh'
+    
     if ($PSVersionTable.PSEdition.ToString() -ne 'Core') {
-        $parent = Get-Process -Id (Get-CimInstance -ClassName Win32_Process -Filter "ProcessId = $PID" -Property ParentProcessId -CimSession $cimSession).ParentProcessId -ErrorAction Ignore
+        $parent = Get-Process -Id (Get-CimInstance -ClassName Win32_Process -Filter "ProcessId = $PID" -Property ParentProcessId).ParentProcessId -ErrorAction Ignore
         for () {
             if ($parent.ProcessName -in $programs) {
-                $parent = Get-Process -Id (Get-CimInstance -ClassName Win32_Process -Filter "ProcessId = $($parent.ID)" -Property ParentProcessId -CimSession $cimSession).ParentProcessId -ErrorAction Ignore
+                $parent = Get-Process -Id (Get-CimInstance -ClassName Win32_Process -Filter "ProcessId = $($parent.ID)" -Property ParentProcessId).ParentProcessId -ErrorAction Ignore
                 continue
             }
             break
@@ -689,175 +948,19 @@ function info_terminal {
     }
 
     if (-not $terminal) {
-        $terminal = "$e[91m(Unknown)"
+        $terminal = " (Unknown)"  # Using placeholder symbol for unknown terminal
+    }
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "「ターミナル」"
+    } elseif ($info_language -eq "en") {
+        $title = "Terminal      "
     }
 
     return @{
-        title   = "Terminal"
+        title   = $title
+        icon    = "├─  "
         content = $terminal
-    }
-}
-
-
-# ===== THEME =====
-function info_theme {
-    $themeinfo = Get-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name SystemUsesLightTheme, AppsUseLightTheme
-    $themename = (Get-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes' -Name CurrentTheme).CurrentTheme.Split('\')[-1].Replace('.theme', '')
-    $systheme = if ($themeinfo.SystemUsesLightTheme) { "Light" } else { "Dark" }
-    $apptheme = if ($themeinfo.AppsUseLightTheme) { "Light" } else { "Dark" }
-    return @{
-        title = "Theme"
-        content = "$themename (System: $systheme, Apps: $apptheme)"
-    }
-}
-
-
-# ===== CPU/GPU =====
-function info_cpu {
-    $cpu = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $Env:COMPUTERNAME).OpenSubKey("HARDWARE\DESCRIPTION\System\CentralProcessor\0")
-    $cpuname = $cpu.GetValue("ProcessorNameString")
-    $cpuname = if ($cpuname.Contains('@')) {
-        ($cpuname -Split '@')[0].Trim()
-    } else {
-        $cpuname.Trim()
-    }
-    return @{
-        title   = "CPU"
-        content = "$cpuname @ $($cpu.GetValue("~MHz") / 1000)GHz" # [math]::Round($cpu.GetValue("~MHz") / 1000, 1) is 2-5ms slower
-    }
-}
-
-function info_gpu {
-    [System.Collections.ArrayList]$lines = @()
-    #loop through Win32_VideoController
-    foreach ($gpu in Get-CimInstance -ClassName Win32_VideoController -Property Name -CimSession $cimSession) {
-        [void]$lines.Add(@{
-            title   = "GPU"
-            content = $gpu.Name
-        })
-    }
-    return $lines
-}
-
-
-# ===== CPU USAGE =====
-function info_cpu_usage {
-    # Get all running processes and assign to a variable to allow reuse
-    $processes = [System.Diagnostics.Process]::GetProcesses()
-    $loadpercent = 0
-    $proccount = $processes.Count
-    # Get the number of logical processors in the system
-    $CPUs = [System.Environment]::ProcessorCount
-
-    $timenow = [System.Datetime]::Now
-    $processes.ForEach{
-        if ($_.StartTime -gt 0) {
-            # Replicate the functionality of New-Timespan
-            $timespan = ($timenow.Subtract($_.StartTime)).TotalSeconds
-
-            # Calculate the CPU usage of the process and add to the total
-            $loadpercent += $_.CPU * 100 / $timespan / $CPUs
-        }
-    }
-
-    return @{
-        title   = "CPU Usage"
-        content = get_level_info "" $cpustyle $loadpercent "$proccount processes" -altstyle
-    }
-}
-
-
-# ===== MEMORY =====
-function info_memory {
-    $total = $os.TotalVisibleMemorySize / 1mb
-    $used = ($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / 1mb
-    $usage = [math]::floor(($used / $total * 100))
-    return @{
-        title   = "Memory"
-        content = get_level_info "   " $memorystyle $usage "$($used.ToString("#.##")) GiB / $($total.ToString("#.##")) GiB"
-    }
-}
-
-
-# ===== DISK USAGE =====
-function info_disk {
-    [System.Collections.ArrayList]$lines = @()
-
-    function to_units($value) {
-        if ($value -gt 1tb) {
-            return "$([math]::round($value / 1tb, 1)) TiB"
-        } else {
-            return "$([math]::floor($value / 1gb)) GiB"
-        }
-    }
-
-    [System.IO.DriveInfo]::GetDrives().ForEach{
-        $diskLetter = $_.Name.SubString(0,2)
-
-        if ($showDisks.Contains($diskLetter) -or $showDisks.Contains("*")) {
-            try {
-                if ($_.TotalSize -gt 0) {
-                    $used = $_.TotalSize - $_.AvailableFreeSpace
-                    $usage = [math]::Floor(($used / $_.TotalSize * 100))
-    
-                    [void]$lines.Add(@{
-                        title   = "Disk ($diskLetter)"
-                        content = get_level_info "" $diskstyle $usage "$(to_units $used) / $(to_units $_.TotalSize)"
-                    })
-                }
-            } catch {
-                [void]$lines.Add(@{
-                    title   = "Disk ($diskLetter)"
-                    content = "(failed to get disk usage)"
-                })
-            }
-        }
-    }
-
-    return $lines
-}
-
-
-# ===== POWERSHELL VERSION =====
-function info_pwsh {
-    return @{
-        title   = "Shell"
-        content = "PowerShell v$($PSVersionTable.PSVersion)"
-    }
-}
-
-
-# ===== POWERSHELL PACKAGES =====
-function info_ps_pkgs {
-    $ps_pkgs = @()
-
-    # Get all installed packages
-    $pgp = Get-Package -ProviderName PowerShellGet
-    # Get the number of packages where the tags contains PSModule or PSScript
-    $modulecount = $pgp.Where({$_.Metadata["tags"] -like "*PSModule*"}).count
-    $scriptcount = $pgp.Where({$_.Metadata["tags"] -like "*PSScript*"}).count
-
-    if ($modulecount) {
-        if ($modulecount -eq 1) { $modulestring = "1 Module" }
-        else { $modulestring = "$modulecount Modules" }
-
-        $ps_pkgs += "$modulestring"
-    }
-
-    if ($scriptcount) {
-        if ($scriptcount -eq 1) { $scriptstring = "1 Script" }
-        else { $scriptstring = "$scriptcount Scripts" }
-
-        $ps_pkgs += "$scriptstring"
-    }
-
-    if (-not $ps_pkgs) {
-        $ps_pkgs = "(none)"
-    }
-
-    return @{
-        title   = "PS Packages"
-        content = $ps_pkgs -join ', '
     }
 }
 
@@ -875,9 +978,7 @@ function info_pkgs {
     }
 
     if ("choco" -in $ShowPkgs -and (Get-Command -Name choco -ErrorAction Ignore)) {
-        $chocopkg = Invoke-Expression $(
-            "(& choco list" + $(if([version](& choco --version).Split('-')[0]`
-            -lt [version]'2.0.0'){" --local-only"}) + ")[-1].Split(' ')[0] - 1")
+        $chocopkg = (& choco list)[-1].Split(' ')[0] - 1
 
         if ($chocopkg) {
             $pkgs += "$chocopkg (choco)"
@@ -907,9 +1008,59 @@ function info_pkgs {
         $pkgs = "(none)"
     }
 
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "パッケージ    "
+    } elseif ($info_language -eq "en") {
+        $title = "Packages      "
+    }
+
     return @{
-        title   = "Packages"
+        title   = $title
+        icon    = "├─󰏗  "
         content = $pkgs -join ', '
+    }
+}
+
+
+# ===== THEME =====
+function info_theme {
+    $themeinfo = Get-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name SystemUsesLightTheme, AppsUseLightTheme
+    $themename = (Get-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes' -Name CurrentTheme).CurrentTheme.Split('\')[-1].Replace('.theme', '')
+    $systheme = if ($themeinfo.SystemUsesLightTheme) { "Light" } else { "Dark" }
+    $apptheme = if ($themeinfo.AppsUseLightTheme) { "Light" } else { "Dark" }
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "テーマ        "
+    } elseif ($info_language -eq "en") {
+        $title = "Theme         "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─  "
+        content = "$themename (System: $systheme, Apps: $apptheme)"
+    }
+}
+
+
+# ===== DATE AND TIME =====
+function info_datetime {
+    $currentDateTime = Get-Date
+    $info_datetime_tz = [Regex]::Replace([System.TimeZoneInfo]::Local.StandardName, '([A-Z])\w+\s*', '$1')
+    $info_datetime_ascii1 = ""
+    $info_datetime_ascii2 = ""
+    $formattedDateTime = '{0} {1:dd.MM.yyyy} {2} {3:HH:mm:ss} ({4})' -f $info_datetime_ascii1, $currentDateTime, $info_datetime_ascii2, $currentDateTime, $info_datetime_tz
+    
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "ローカル時間  "
+    } elseif ($info_language -eq "en") {
+        $title = "Local Time    "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─󱛡  "
+        content = "$formattedDateTime"
     }
 }
 
@@ -918,12 +1069,8 @@ function info_pkgs {
 function info_battery {
     Add-Type -AssemblyName System.Windows.Forms
     $battery = [System.Windows.Forms.SystemInformation]::PowerStatus
-
     if ($battery.BatteryChargeStatus -eq 'NoSystemBattery') {
-        return @{
-            title = "Battery"
-            content = "(none)"
-        }
+        return $null
     }
 
     $status = if ($battery.BatteryChargeStatus -like '*Charging*') {
@@ -933,21 +1080,261 @@ function info_battery {
     } else {
         "Discharging"
     }
-
+    
     $timeRemaining = $battery.BatteryLifeRemaining / 60
-    # Don't show time remaining if Windows hasn't properly reported it yet
     $timeFormatted = if ($timeRemaining -ge 0) {
         $hours = [math]::floor($timeRemaining / 60)
         $minutes = [math]::floor($timeRemaining % 60)
         ", ${hours}h ${minutes}m"
     }
 
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "バッテリー"
+    } elseif ($info_language -eq "en") {
+        $title = "Battery"
+    }
+
     return @{
-        title = "Battery"
+        title   = $title
+        icon    = "├─  "
         content = get_level_info "  " $batterystyle "$([math]::round($battery.BatteryLifePercent * 100))" "$status$timeFormatted" -altstyle
     }
 }
 
+
+
+
+
+########################################################################################
+#  COMPUTER, CPU, GPU, MOTHERBOARD, TEMPERATURES, RESOLUTION, CPU_USAGE, MEMORY, DISK  #
+########################################################################################
+
+# ===== COMPUTER =====
+function info_computer {
+    $compsys = Get-CimInstance -ClassName Win32_ComputerSystem -Property Manufacturer, Model -CimSession $cimSession
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "コンピュータ  "
+    } elseif ($info_language -eq "en") {
+        $title = "Host computer "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─  "
+        content = '{0} {1}' -f $compsys.Manufacturer, $compsys.Model
+    }
+}
+
+
+# ===== CPU & CPU TEMP =====
+function info_cpu {
+    $cpu = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $Env:COMPUTERNAME).OpenSubKey("HARDWARE\DESCRIPTION\System\CentralProcessor\0")
+    $cpuname = $cpu.GetValue("ProcessorNameString")
+    $cpuname = $cpuname -replace '\(R\)', '' -replace '\(TM\)', '' -replace 'Gen', '' -replace '5th', '' -replace '6th', '' -replace '7th', '' -replace '8th', '' -replace '9th', '' -replace '10th', '' -replace '11th', '' -replace '12th', '' -replace '13th', '' -replace '14th', '' -replace '15th', '' -replace '16th', ''
+    $cpuname = $cpuname.Trim()
+    if ($cpuname.Contains('@')) {
+        $cpuname = ($cpuname -split '@')[0].Trim()
+    }
+
+    $cpuFrequencyGHz = [math]::Round($cpu.GetValue("~MHz") / 1000, 2)
+
+    $tempcpu = Get-CimInstance -ClassName MSAcpi_ThermalZoneTemperature -Namespace "root/wmi"
+    if ($tempcpu) {
+        $cpuTempCelsius = $tempcpu.CurrentTemperature / 100
+        $cpuTempInfo = " ($($cpuTempCelsius) °C)"
+    } else {
+        $cpuTempInfo = ""
+    }
+
+    return @{
+        title   = "CPU "
+        icon    = "├─  "
+        content = "$cpuname @ $cpuFrequencyGHz GHz$cpuTempInfo"
+    }
+}
+
+# ==== GPU ====
+function info_gpu {
+    [System.Collections.ArrayList]$lines = @()
+    # Loop through Win32_VideoController
+    foreach ($gpu in Get-CimInstance -ClassName Win32_VideoController -Property Name -CimSession $cimSession) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like '*NVIDIA*' -or $gpuName -like '*AMD*') {
+            [void]$lines.Add(@{
+                title   = "GPU "
+                icon = "├─  "
+                content = $gpuName
+            })
+        }
+    }
+    return $lines
+}
+
+# ===== MOTHERBOARD =====
+function info_motherboard {
+    $motherboard = Get-CimInstance Win32_BaseBoard -CimSession $cimSession -Property Manufacturer, Product
+    $manufacturer = $motherboard.Manufacturer
+    $truncatedManufacturer = $manufacturer -replace 'TeK COMPUTER INC.', ''  # Replace with appropriate truncation for ASUS branding
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "マザーボード  "
+    } elseif ($info_language -eq "en") {
+        $title = "Motherboard   "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─  "
+        content = "{0} {1}" -f $truncatedManufacturer.Trim(), $motherboard.Product
+    }
+}
+
+
+# Was going to add a separate line for temps, but couldn't find any way to show the GPU temp, so I put it on ice
+# ==== TEMPERATURES ====
+#function info_temperatures {
+#    $tempcpu = Get-CimInstance MSAcpi_ThermalZoneTemperature -Namespace "root/wmi"
+#    return @{
+#        title   = "CPU 温度  "
+#        icon    = "├─  "
+#        content = "$($tempcpu.CurrentTemperature / 100) °C (CPU)"
+#    }
+#}
+
+# ===== RESOLUTION =====
+function info_resolution {
+    Add-Type -AssemblyName System.Windows.Forms
+    $displays = foreach ($monitor in [System.Windows.Forms.Screen]::AllScreens) {
+        "$($monitor.Bounds.Size.Width)x$($monitor.Bounds.Size.Height)"
+    }
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "画面解像度    "
+    } elseif ($info_language -eq "en") {
+        $title = "Resolution(s) "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─󰹑  "
+        content = $displays -join ', '
+    }
+}
+
+
+# ===== CPU USAGE =====
+function info_cpu_usage {
+    # Get all running processes and assign to a variable to allow reuse
+    $processes = [System.Diagnostics.Process]::GetProcesses()
+    $loadpercent = 0
+    $proccount = $processes.Count
+    # Get the number of logical processors in the system
+    $CPUs = [System.Environment]::ProcessorCount
+
+    $timenow = [System.Datetime]::Now
+    $processes.ForEach{
+        if ($_.StartTime -gt 0) {
+            # Replicate the functionality of New-Timespan
+            $timespan = ($timenow.Subtract($_.StartTime)).TotalSeconds
+
+            # Calculate the CPU usage of the process and add to the total
+            $loadpercent += $_.CPU * 100 / $timespan / $CPUs
+        }
+    }
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "CPU使用率     "
+    } elseif ($info_language -eq "en") {
+        $title = "CPU Usage     "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─  "
+        content = get_level_info "" $cpustyle $loadpercent "$proccount processes" -altstyle
+    }
+}
+
+
+# ===== MEMORY =====
+function info_memory {
+    $m = Get-CimInstance -ClassName Win32_OperatingSystem -Property TotalVisibleMemorySize, FreePhysicalMemory -CimSession $cimSession
+    $total = $m.TotalVisibleMemorySize / 1mb
+    $used = ($m.TotalVisibleMemorySize - $m.FreePhysicalMemory) / 1mb
+    $usage = [math]::floor(($used / $total * 100))
+
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        $title = "ラム          "
+    } elseif ($info_language -eq "en") {
+        $title = "Memory        "
+    }
+
+    return @{
+        title   = $title
+        icon    = "├─  "
+        content = get_level_info "" $memorystyle $usage "$($used.ToString("#.##")) GiB / $($total.ToString("#.##")) GiB"
+    }
+}
+
+
+# ===== DISK USAGE =====
+function info_disk {
+    [System.Collections.ArrayList]$lines = @()
+
+    function to_units($value) {
+        if ($value -gt 1tb) {
+            return "$([math]::round($value / 1tb, 1)) TiB"
+        } else {
+            return "$([math]::floor($value / 1gb)) GiB"
+        }
+    }
+
+    $drives = [System.IO.DriveInfo]::GetDrives() | Where-Object { $_.DriveType -eq 'Fixed' -and $_.IsReady }
+    $totalDrives = $drives.Count
+    $currentDrive = 1
+
+    $drives.ForEach{
+        $diskLetter = $_.Name.SubString(0,2)
+
+        if ($showDisks.Contains($diskLetter) -or $showDisks.Contains("*")) {
+            try {
+                if ($_.TotalSize -gt 0) {
+                    $used = $_.TotalSize - $_.AvailableFreeSpace
+                    $available = $_.AvailableFreeSpace
+                    $usage = [math]::Floor(($used / $_.TotalSize * 100))
+                    
+                    $icon = if ($currentDrive -eq $totalDrives) { "├─  " } else { "├─  " }
+                    $currentDrive++
+    
+                    [void]$lines.Add(@{
+                        title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "ディスク ($diskLetter) " } elseif ($info_language -eq "en") { "Disk ($diskLetter)     " }
+                        icon    = $icon
+                        content = get_level_info "" $diskstyle $usage "$(to_units $available ) / $(to_units $_.TotalSize)" # Shows how much space is left.
+                    })
+                }
+            } catch {
+                $icon = if ($currentDrive -eq $totalDrives) { "├─  " } else { "├─  " }
+                $currentDrive++
+                
+                [void]$lines.Add(@{
+                    title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "ディスク ($diskLetter)" } elseif ($info_language -eq "en") { "Disk ($diskLetter)   " }
+                    icon    = $icon
+                    content = "(Error)"
+                })
+            }
+        }
+    }
+    return $lines
+}
+
+
+
+
+
+###########################################################
+#  LOCALE, LAYOUT, LOCAL_IP, PUBLIC_IP, FAKE_IP, WEATHER  #
+###########################################################
 
 # ===== LOCALE =====
 function info_locale {
@@ -1344,27 +1731,34 @@ function info_locale {
         $Languages += " - $($languageLookup[$_])"
     }
 
-    return @{
-        title = "Locale"
-        content = "$Region$Languages"
-    }
-}
-
-
-# ===== WEATHER =====
-function info_weather {
-    return @{
-        title = "Weather"
-        content = try {
-            (Invoke-RestMethod -TimeoutSec 5 wttr.in/?format="%t+-+%C+(%l)").TrimStart("+")
-        } catch {
-            "$e[91m(Network Error)"
+    if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
+        return @{
+            title   = "ロケール      "
+            icon    = "├─  "
+            content = "$Region$($Languages -join ', ')"
+        }
+    } elseif ($info_language -eq "en") {
+        return @{
+            title   = "Locale        "
+            icon    = "├─  "
+            content = "$Region$($Languages -join ', ')"
         }
     }
 }
 
+# ===== IMT KEYBOARD LAYOUT =====
+# Wanted it to show the actual name, and not just the IMT numbers. Haven't figured that out yet.
+function info_layout {
+    $keyboardLayout = (Get-WinUserLanguageList)[0].InputMethodTips[0]
+    return @{
+        title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "キーボード    " } elseif ($info_language -eq "en") { "Keyboard      " }
+        icon    = "├─  "
+        content = "$keyboardLayout (IMT)"
+    }
+}
 
-# ===== IP =====
+
+# ===== LOCAL_IP =====
 function info_local_ip {
     try {
         # Get all network adapters
@@ -1386,7 +1780,8 @@ function info_local_ip {
     } catch {
     }
     return @{
-        title = "Local IP"
+        title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "ローカル IP   " } elseif ($info_language -eq "en") { "Local IP      " }
+        icon    = "├─󰩠  "
         content = if (-not $local_ip) {
             "$e[91m(Unknown)"
         } else {
@@ -1395,17 +1790,51 @@ function info_local_ip {
     }
 }
 
+
+# ===== PUBLIC_IP =====
 function info_public_ip {
     return @{
-        title = "Public IP"
+        title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "パブリック IP " } elseif ($info_language -eq "en") { "Public IP     " }
+        icon    = "├─  "
         content = try {
-            Invoke-RestMethod -TimeoutSec 5 ifconfig.me/ip
+            Invoke-RestMethod ifconfig.me/ip
         } catch {
             "$e[91m(Network Error)"
         }
     }
 }
 
+
+# ===== REDACTED_IP =====
+function info_redacted_ip {
+    return @{
+        title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "伏字 IP       " } elseif ($info_language -eq "en") { "Redacted IP   " }
+        icon    = "├─  "
+        content = "▉▉▉.▉▉.▉▉▉.▉▉"
+    }
+}
+
+
+# ===== WEATHER =====
+function info_weather {
+    return @{
+        title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "位置情報      " } elseif ($info_language -eq "en") { "Weather       " }
+        icon    = "├─󰖐  "
+        content = try {
+            (Invoke-RestMethod wttr.in/?format="%t+-+%C+(%l)").TrimStart("+")
+        } catch {
+            "$e[91m(Network Error)"
+        }
+    }
+}
+
+
+
+
+
+############################
+#  THE REST OF THE SCRIPT  #
+############################
 
 if (-not $stripansi) {
     # unhide the cursor after a terminating error
@@ -1434,7 +1863,6 @@ if ($img -and -not $stripansi) {
     Write-Output "$e[$($img.Length + 1)A"
 }
 
-
 # write info
 foreach ($item in $config) {
     if (Test-Path Function:"info_$item") {
@@ -1452,7 +1880,12 @@ foreach ($item in $config) {
     }
 
     foreach ($line in $info) {
-        $output = "$e[1;33m$($line["title"])$e[0m"
+        $output = "$e[1;37m$($line["icon"])$e[0m"   #note: printing icons
+
+        if ($line["icon"] -and $line["title"]) {
+            $output += "  "
+        }
+        $output += "$e[1;31m$($line["title"])$e[0m" #note: items colors
 
         if ($line["title"] -and $line["content"]) {
             $output += ": "
@@ -1506,7 +1939,6 @@ if (-not $stripansi) {
 } else {
     Write-Output "`n"
 }
-
 #  ___ ___  ___
 # | __/ _ \| __|
 # | _| (_) | _|
