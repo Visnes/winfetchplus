@@ -122,7 +122,7 @@ $defaultConfig = @'
 # $imgwidth = 52
 
 # Make the logo blink
-$blink = $true
+$blink = 'true'
 
 # Display all built-in info segments.
 # $all = $true
@@ -139,6 +139,12 @@ $blink = $true
 # $ShowDisks = @("C:", "D:")
 # Show all available disks
 # $ShowDisks = @("*")
+
+# Configure if the CPU temp shows in info_cpu
+# Some systems can't get the temp with the way this is coded
+# Turn it on and try, turn it off if it doesn't work.
+# $CPUTemp = $true
+
 
 # Configure which package managers are shown
 # disabling unused ones will improve speed
@@ -1322,8 +1328,8 @@ function info_computer {
 function info_cpu {
     $cpu = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $Env:COMPUTERNAME).OpenSubKey("HARDWARE\DESCRIPTION\System\CentralProcessor\0")
     $cpuname = $cpu.GetValue("ProcessorNameString")
-    # I don't have an AMD processor, so I don't what that will look like.
-    # I trimmed the R and TM marks, as well as Gen and witch gen number. It always ended overflowing on the side.
+    # I don't have an AMD processor, so I don't know what that will look like.
+    # I trimmed the R and TM marks, as well as Gen and which gen number. It always ended overflowing on the side.
     # Please, feel free to add the same thing to AMD CPUs.
     $cpuname = $cpuname -replace '\(R\)', '' -replace '\(TM\)', '' -replace 'Gen', '' -replace '5th', '' -replace '6th', '' -replace '7th', '' -replace '8th', '' -replace '9th', '' -replace '10th', '' -replace '11th', '' -replace '12th', '' -replace '13th', '' -replace '14th', '' -replace '15th', '' -replace '16th', ''
     $cpuname = $cpuname.Trim()
@@ -1333,10 +1339,14 @@ function info_cpu {
 
     $cpuFrequencyGHz = [math]::Round($cpu.GetValue("~MHz") / 1000, 2)
 
-    $tempcpu = Get-CimInstance -ClassName MSAcpi_ThermalZoneTemperature -Namespace "root/wmi"
-    if ($tempcpu) {
-        $cpuTempCelsius = $tempcpu.CurrentTemperature / 100
-        $cpuTempInfo = " ($($cpuTempCelsius) °C)"
+    if ($CPUTemp -eq $true) { # It shows the temp on my stationary, but not my laptop, so made this a toogle (off by default) in the config file
+        $tempcpu = Get-CimInstance -ClassName MSAcpi_ThermalZoneTemperature -Namespace "root/wmi"
+        if ($tempcpu) {
+            $cpuTempCelsius = $tempcpu.CurrentTemperature / 100
+            $cpuTempInfo = " ($($cpuTempCelsius) °C)"
+        } else {
+            $cpuTempInfo = ""
+        }
     } else {
         $cpuTempInfo = ""
     }
@@ -1347,6 +1357,7 @@ function info_cpu {
         content = "$cpuname @ $cpuFrequencyGHz GHz$cpuTempInfo"
     }
 }
+
 
 # ==== GPU ====
 function info_gpu {
