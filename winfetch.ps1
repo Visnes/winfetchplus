@@ -716,7 +716,7 @@ $img = if (-not $noimage) {
                 "${e}[${t};34m└─────┘${e}[33m└─────┘"
             )
         } else {
-            Write-Error 'Use one of the followings logos in the config file: Microsoft, Windows 11, Windows 10, Windows XP, Windows 7, Microsoft or Visnes.'
+            Write-Error 'Use one of the followings logos in the config file: Microsoft, Windows 11, Windows 10, Windows XP, Windows 7, Microsoft, girlcartoon, girlvisage, girlvisage2, girlvisage3 or Visnes.'
             exit 1
         }
     }
