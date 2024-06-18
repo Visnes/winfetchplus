@@ -1990,7 +1990,7 @@ function info_public_ip {
         title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "パブリック IP " } elseif ($info_language -eq "en") { "Public IP     " }
         icon    = "├─  "
         content = try {
-            Invoke-RestMethod ifconfig.me/ip
+            Invoke-RestMethod -TimeoutSec 5 ifconfig.me/ip
         } catch {
             "$e[91m(Network Error)"
         }
@@ -2024,7 +2024,7 @@ function info_weather {
         title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "位置情報      " } elseif ($info_language -eq "en") { "Weather       " }
         icon    = "├─󰖐  "
         content = try {
-            (Invoke-RestMethod wttr.in/?format="%t+-+%C+(%l)").TrimStart("+")
+            (Invoke-RestMethod -TimeoutSec 5 wttr.in/?format="%t+-+%C+(%l)").TrimStart("+")
         } catch {
             "$e[91m(Network Error)"
         }
