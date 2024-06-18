@@ -27,6 +27,7 @@ Plus! adds new features and a bit of cleanup in how it looks. Some of which are:
 * Temperature output for the CPU
 * Amount of space left (instead of space used)
 * Able to show a redacted public IP instead of your actual public IP
+* Gives you a haiku or a dumb quote
 
 <br />
 <p align="center">
