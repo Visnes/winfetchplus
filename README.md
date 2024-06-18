@@ -10,8 +10,8 @@
 
 <br />
 <p align="center">
-<img alt="Windows Terminal screenshot" src="https://github.com/Visnes/winfetchplus/assets/15141314/7c2ad63c-64d8-43ba-9673-11654f8d3a9b" width="500px">
-<img alt="Windows Terminal screenshot" src="https://github.com/Visnes/winfetchplus/assets/15141314/92501f9c-63b0-4a31-aa8f-7eb58ad61edc" width="500px">
+<img alt="Windows Terminal screenshot" src="https://github.com/Visnes/winfetchplus/assets/15141314/7c2ad63c-64d8-43ba-9673-11654f8d3a9b" width="100%">
+<img alt="Windows Terminal screenshot" src="https://github.com/Visnes/winfetchplus/assets/15141314/92501f9c-63b0-4a31-aa8f-7eb58ad61edc" width="100%">
 </p>
 <br />
 
