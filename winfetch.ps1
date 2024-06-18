@@ -206,8 +206,9 @@ $diskstyle = 'bartext'
 #    "layout"
     "local_ip"
 #    "public_ip"
-    "redacted_ip"
-    "weather"
+#    "redacted_ip"
+    "random_ip"
+"weather"
 # END OF VIEW WITH COLORBAR
     "dashes_end"
     "blank"
@@ -282,6 +283,7 @@ if (-not $config -or $all) {
         "local_ip"
         "public_ip"
         "redacted_ip"
+        "random_ip"
         "weather"
         "dashes_end"
         "blank"
@@ -1320,6 +1322,9 @@ function info_computer {
 function info_cpu {
     $cpu = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $Env:COMPUTERNAME).OpenSubKey("HARDWARE\DESCRIPTION\System\CentralProcessor\0")
     $cpuname = $cpu.GetValue("ProcessorNameString")
+    # I don't have an AMD processor, so I don't what that will look like.
+    # I trimmed the R and TM marks, as well as Gen and witch gen number. It always ended overflowing on the side.
+    # Please, feel free to add the same thing to AMD CPUs.
     $cpuname = $cpuname -replace '\(R\)', '' -replace '\(TM\)', '' -replace 'Gen', '' -replace '5th', '' -replace '6th', '' -replace '7th', '' -replace '8th', '' -replace '9th', '' -replace '10th', '' -replace '11th', '' -replace '12th', '' -replace '13th', '' -replace '14th', '' -replace '15th', '' -replace '16th', ''
     $cpuname = $cpuname.Trim()
     if ($cpuname.Contains('@')) {
@@ -1364,7 +1369,7 @@ function info_gpu {
 function info_motherboard {
     $motherboard = Get-CimInstance Win32_BaseBoard -CimSession $cimSession -Property Manufacturer, Product
     $manufacturer = $motherboard.Manufacturer
-    $truncatedManufacturer = $manufacturer -replace 'TeK COMPUTER INC.', ''  # Replace with appropriate truncation for ASUS branding
+    $truncatedManufacturer = $manufacturer -replace 'TeK COMPUTER INC.', ''  # Replace with appropriate truncation for ASUS branding, feel free to add other brands too.
 
     if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
         $title = "マザーボード  "
@@ -1379,13 +1384,13 @@ function info_motherboard {
     }
 }
 
-
 # Was going to add a separate line for temps, but couldn't find any way to show the GPU temp, so I put it on ice
 # ==== TEMPERATURES ====
 #function info_temperatures {
+#    $title = if (($info_language -eq "en") -and $info_language) { "CPU Temperature" } else { "CPU 温度  " }
 #    $tempcpu = Get-CimInstance MSAcpi_ThermalZoneTemperature -Namespace "root/wmi"
 #    return @{
-#        title   = "CPU 温度  "
+#        title   = $title
 #        icon    = "├─  "
 #        content = "$($tempcpu.CurrentTemperature / 100) °C (CPU)"
 #    }
@@ -1410,7 +1415,6 @@ function info_resolution {
         content = $displays -join ', '
     }
 }
-
 
 # ===== CPU USAGE =====
 function info_cpu_usage {
@@ -2000,6 +2004,16 @@ function info_redacted_ip {
         title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "伏字 IP       " } elseif ($info_language -eq "en") { "Redacted IP   " }
         icon    = "├─  "
         content = "▉▉▉.▉▉.▉▉▉.▉▉"
+    }
+}
+
+# ==== RANDOM_IP ====
+function info_random_ip {
+    $randomIP = -join ((1..4) | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 }) -replace '(\d{1,3})(?=(\d{1,3})+$)', '$1.'
+    return @{
+        title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "伏字 IP       " } elseif ($info_language -eq "en") { "Redacted IP   " }
+        icon    = "├─  "
+        content = $randomIP
     }
 }
 
