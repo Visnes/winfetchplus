@@ -742,6 +742,7 @@ function info_blank {
     return @{}
 }
 
+
 # ===== BLANK-D =====
 function info_blank_d {
     return @{
@@ -750,6 +751,7 @@ function info_blank_d {
     }
 }
 
+
 # ===== BLANK-E =====
 function info_blank_e {
     return @{
@@ -757,6 +759,7 @@ function info_blank_e {
         content = "└"
     }
 }
+
 
 # ===== INFO_SOFTWARE =====
 function info_software {
@@ -776,6 +779,7 @@ function info_software {
         content = $content
     }
 }
+
 
 # ===== INFO_HARDWARE =====
 function info_hardware {
@@ -948,7 +952,6 @@ function info_subtitle {
 
 
 
-
 #################################################################################
 #  OS, KERNEL, PS-PKGS, PWSH, UPTIME, TERMINAL, PKGS, THEME, DATETIME, BATTERY  #
 #################################################################################
@@ -977,6 +980,7 @@ function info_os {
     }
 }
 
+
 # ===== KERNEL =====
 function info_kernel {
     # Set default language to jp if $info_language is blank or not set
@@ -1001,6 +1005,7 @@ function info_kernel {
         content = "$([System.Environment]::OSVersion.Version)"
     }
 }
+
 
 # ===== POWERSHELL PACKAGES =====
 function info_ps_pkgs {
@@ -1040,6 +1045,7 @@ function info_ps_pkgs {
         content = $ps_pkgs -join ', '
     }
 }
+
 
 # ===== POWERSHELL VERSION =====
 function info_pwsh {
@@ -1301,7 +1307,6 @@ function info_battery {
 
 
 
-
 ########################################################################################
 #  COMPUTER, CPU, GPU, MOTHERBOARD, TEMPERATURES, RESOLUTION, CPU_USAGE, MEMORY, DISK  #
 ########################################################################################
@@ -1376,11 +1381,12 @@ function info_gpu {
     return $lines
 }
 
+
 # ===== MOTHERBOARD =====
 function info_motherboard {
     $motherboard = Get-CimInstance Win32_BaseBoard -CimSession $cimSession -Property Manufacturer, Product
     $manufacturer = $motherboard.Manufacturer
-    $truncatedManufacturer = $manufacturer -replace 'TeK COMPUTER INC.', ''  # Replace with appropriate truncation for ASUS branding, feel free to add other brands too.
+    $truncatedManufacturer = $manufacturer -replace 'TeK COMPUTER INC.', ''  # Trimming away ASUS branding, feel free to add other brands too.
 
     if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") {
         $title = "マザーボード  "
@@ -1395,6 +1401,7 @@ function info_motherboard {
     }
 }
 
+
 # Was going to add a separate line for temps, but couldn't find any way to show the GPU temp, so I put it on ice
 # ==== TEMPERATURES ====
 #function info_temperatures {
@@ -1406,6 +1413,7 @@ function info_motherboard {
 #        content = "$($tempcpu.CurrentTemperature / 100) °C (CPU)"
 #    }
 #}
+
 
 # ===== RESOLUTION =====
 function info_resolution {
@@ -1426,6 +1434,7 @@ function info_resolution {
         content = $displays -join ', '
     }
 }
+
 
 # ===== CPU USAGE =====
 function info_cpu_usage {
@@ -1531,7 +1540,6 @@ function info_disk {
     }
     return $lines
 }
-
 
 
 
@@ -1954,12 +1962,16 @@ function info_locale {
 # Wanted it to show the actual name, and not just the IMT numbers. Haven't figured that out yet.
 function info_layout {
     $keyboardLayout = (Get-WinUserLanguageList)[0].InputMethodTips[0]
+    $keyboardLayoutName = if ($keyboardLayout -eq "0409:00000414") { "Norsk (nb-NO)" } else { $keyboardLayout }
+
     return @{
         title   = if ([string]::IsNullOrEmpty($info_language) -or $info_language -eq "jp") { "キーボード    " } elseif ($info_language -eq "en") { "Keyboard      " }
         icon    = "├─  "
-        content = "$keyboardLayout (IMT)"
+        content = "$keyboardLayoutName"
     }
 }
+
+
 
 
 # ===== LOCAL_IP =====
